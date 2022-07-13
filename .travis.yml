@@ -1,0 +1,21 @@
+language: generic 
+sudo: required
+services:
+  - docker
+
+# before install:
+#   - docker build -t blatsosinf/react-test -f ./client/Dockerfile.dev ./client
+
+# script:
+#   - docker run -e CI=true blatsosinf/react-test npm test
+
+after_success:
+  - docker build -t blatsosinf/multi-client ./client
+  - docker build -t blatsosinf/multi-nginx ./nginx
+  - docker build -t blatsosinf/multi-server ./server
+  - docker build -t blatsosinf/multi-worker ./worker
+  - echo "$DOCKER_PASS" | docker login -u "$DOCKER_ID" --password-stdin
+  - docker push blatsosinf/multi-client
+  - docker push blatsosinf/multi-nginx
+  - docker push blatsosinf/multi-server
+  - docker push blatsosinf/multi-worker
